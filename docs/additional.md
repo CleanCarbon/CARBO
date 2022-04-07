@@ -1,24 +1,23 @@
-# Дополнительная информация по смарт-контрактам CARBO
+# Additional information about CARBO smart contracts
 
 ### Содежрание
-* [Функциональные возможности CARBOToken](#carbotoken)
-* [Функциональные возможности CrowdSale](#crowdsale)
-* [Функциональные возможности VestingWallet](#vestingwallet)
+* [Functionality of CARBO Token](#carbotoken)
+* [Functionality of CrowdSale](#crowdsale)
+* [VestingWallet functionality](#vestingwallet)
 
-## <a name="carbotoken"></a>Функциональные возможности CARBOToken
-У контракта CARBO есть функционал, который позволяет `owner`у выводить с адреса контракта токены, и `BNB` отправленные на него по ошибке.  
-Для этого следует воспользоваться методами `retrieveTokens` и `retrieveETH` соответственно.  
-Метод `retrieveTokens` принимает два параметра: адрес, на который нужно отправить токены и адрес смарт-контракта токена.  
-Методу `retrieveETH` нужен только один параметр: адрес, на который нужно отправить `BNB`.
+## <a name="carbotoken"></a>Functionality of CARBO Token
+The CARBO contract has a functionality that allows the `owner` to withdraw tokens from the contract address, and `BNB` sent to it by mistake.
+To do this, use the `retrieveTokens` and `retrieveETH` methods, respectively.
+The `retrieveTokens` method takes two parameters: the address to send the tokens to and the smart contract address of the token.
+The `retrieveETH` method only needs one parameter: the address to send the `BNB` to.
 
-## <a name="crowdsale"></a>Функциональные возможности CrowdSale
-1. CrowdSale - это `pausable` контракт. В случае непредвиденных ситуаций покупку токенов можно приостановить.
-2. Как и в случае с контрактом токена, у контракта CrowdSale предусмотрены методы для вывода токенов и `BNB`.
-Вывод `BNB`, скорее всего, не потребуется (контракт принимает средства только во время действия распродажи).
-С помощью метода `retreiveTokens` администратор может выводить с контракта другие токены, отправленные по ошибке.
-### Этапы распродажи
-В общем случае распродажа проводится в несколько этапов.
-Этап описывается с помощью объекта:
+## <a name="crowdsale"></a>Functionality of CrowdSale
+CrowdSale is a `pausable` contract. In case of unforeseen situations, the purchase of tokens can be suspended.
+As with the token contract, the CrowdSale contract provides methods for withdrawing tokens and `BNB`. `BNB` withdrawal will most likely not be required (the contract only accepts funds during the sale). Using the `retreiveTokens` method, the administrator can withdraw other tokens sent by mistake from the contract.
+
+### Sale stages
+In general, the sale is carried out in several stages. 
+The stage is described using an object:
 ```
 struct Stage {
     uint256 start;
@@ -31,43 +30,47 @@ struct Stage {
     uint8 vestingSchedule;
 }
 ```
-* `id` - идентификатор этапа
-* `start` - дата начала этапа в формате `unixtime`
-* `end` - дата окончания этапа в формате `unixtime`
-* `bonus` - бонус в процентах от суммы покупки, который начисляется пользователю за приобретение токенов на данном этапе
-* `minInvestmentLimit` - минимальная сумма покупки в `wei`
-* `invested` - сумма привлеченных инвестиций на данном этапе в `wei`
-* `tokensSold` - количество проданных токенов на данном этапе
-* `hardcapInTokens` - хардкап для данного этапа
-* `vestingSchedule` - `id` графика вестинга.
+* `id` - stage ID
+* `start` - stage start date in `unixtie` format
+* `end` - stage end date in `unixtime` format
+* `bonus` - bonus as a percentage of the purchase amount, which is awarded to the user for the purchase of tokens at this stage
+* `minInvestmentLimit` - minimum purchase amount in `wei`
+* `invested` - the amount of attracted investments at this stage in `wei`
+* `tokensSold` - the number of sold tokens at this stage
+* `hardcapInTokens` - hardcap for this stage
+* `vestingSchedule` - vesting schedule `id`
 
-Каждый раз, когда пользователь отправляет `BNB` на адрес смарт-контракта, производится поиск активного этапа распродажи.
-В случае, если подходящий этап не найден, пользователю возвращается ошибка.  
-Контракт имеет метод `setStage` для изменения параметров этапов.  
-С помощью этого метода `owner` может задавать основные параметры любого этапа.  
-Общие правила взаимодействия со смарт-контрактом можно узнать в [инструкции для администратора](manager.md)  
-> Мы рекомендуем использовать вкладку `config` в таблице `CARBO`, которая позволяет приобразовывать человекопонятные значения во внутреннее представление смарт-контракта.  
-> На всякий случай перед тем как вносить изменения, проконсультируйтесь с разработчиком.
-
-### Правила вестинга
-К любому из этапов распродажи можно применить правила вестинга.
-На момент написания этого документа распродажа проводится в один этап, который использует график вестинга с id `0`.
-Вестинг подразумевает, что токены, приобретенные во время соответствующего этапа распродажи, не переводятся на адрес покупателя, а отправляются на адрес контракта вестинга.  
-Для того чтобы вывести токены, пользователю нужно будет вызвать метод `withdraw` контракта вестинга.
-* В случае, если условия вестинга соблюдены и к выводу доступны токены, контракт переведет расчетную сумму на адрес пользователя.
-* В случае, если на балансе пользователя нет токенов, доступных к выводу, смарт-контракт вернет ошибку.
-
-Пользователь может сэкономить свои средства и не выполнять транзакцию, т.к. Metamask заранее распознает транзакции, которые возвращают ошибки, и выводит уведомление перед отправкой.  
-Параметры вестинга описываются с помощью объекта `VestingSchedule`
+Every time a user sends BNB to a smart contract address, a search is made for an active stage of the sale. If no suitable step is found, an error is returned to the user.
+The contract has a `setStage` method to change the parameters of the stages.
+Using this method, the `owner` can set the basic parameters of any stage.
+General rules for interacting with a smart contract can be found in the [instructions for the administrator](manager.md)  
 
 
-## <a name="vestingwallet"></a>Функциональные возможности VestingWallet
-### Права доступа
-Контракт `VestingWallet` работает с двумя группами пользователей:
-* `owner`. Данный пользователь может производить конфигурацию контракта и вызывать служебные методы для вывода токенов и средств, отправленных на него по ошибке.
-* `beneficiary`. Данный пользователь является конечным пользователем данного контракта и имеет право выводить с него токены в соответствии с графиком вестинга.
-### Графики выплат
-Контракт хранит список графиков выплат. Каждый график выплаты описывается с помощью объекта `VestingSchedule`:
+> We recommend using the `config` tab in the `CARBO` table, which allows you to convert human-readable values to the internal representation of the smart contract.
+> Just in case, before making changes, consult with the developer.
+
+### Vesting rules
+Vesting rules can be applied to any stage of the sale. 
+At the time of this writing, the sale is being run in a single stage, which uses a vesting schedule with id 0. Vesting means that tokens purchased during the corresponding stage of the sale are not transferred to the address of the buyer, but are sent to the address of the vesting contract.
+In order to withdraw tokens, the user will need to call the `withdraw` method of the vesting contract.
+
+* If the vesting conditions are met and tokens are available for withdrawal, the contract will transfer the estimated amount to the user's address.
+* If there are no tokens available for withdrawal on the user's balance, the smart contract will return an error.
+
+The user can save his money and not complete the transaction, because. Metamask recognizes transactions that return errors in advance and displays a notification before sending.
+Vesting parameters are described using the `VestingSchedule` object.
+
+
+## <a name="vestingwallet"></a>VestingWallet functionality
+### Access rights
+The `VestingWallet` contract works with two user groups:
+
+* `owner`. This user can configure the contract and call utility methods to withdraw tokens and funds sent to it by mistake.
+* `beneficiary`. This user is the end user of this contract and has the right to withdraw tokens from it in accordance with the vesting schedule.
+
+### Payout Schedules
+The contract stores a list of payment schedules. Each payout schedule is described using a `VestingSchedule` object:
+
 ```
 VestingSchedule {
     uint256 id;
@@ -76,15 +79,15 @@ VestingSchedule {
     uint256 interval;
 }
 ```
-* `id` - идентификатор графика. Балансы пользователя используют этот идентификатор для того, чтобы получать информацию о следующей выплате
-* `start` - дата, с которой начинается отсчет, в формате `unixtime`
-* `duration` - суммарная продолжительность рассроченной выплаты в секундах
-* `interval` - длительность временного промежутка между выплатами в секундах
+* `id` - chart identifier. User balances use this identifier to receive information about the next payout
+* `start` - the date from which the countdown starts, in `unixtime` format
+* `duration` - the total duration of the installment payment in seconds
+* `interval` - the duration of the time interval between payments in seconds
 
-Для установки параметров вестинга `owner`у следует использовать метод `setVestingSchedule`.
+To set vesting parameters, the owner should use the `setVestingSchedule` method.
 
-### Балансы пользователей
-Контракт хранит список пользовательских балансов. Баланс описывается с помощью объекта `Balance`:
+### User balances
+The contract keeps a list of user balances. The balance is described using the `Balance` object:
 ```
 struct Balance {
     uint256 schedule;
@@ -93,13 +96,15 @@ struct Balance {
     uint256 withdrawn;
 }
 ```
-* `schedule` - `id` графика выплат. Соответствует `id` объекта `VestingSchedule`
-* `beneficiary` - адрес пользователя
-* `initial` - изначальное количество токенов на балансе
-* `withdrawn` - сумма выведенных токенов
+* `schedule` - payout schedule `id`. Corresponds to the `id` of the `VestingSchedule` object
+* `beneficiary` - user address
+* `initial` - initial amount of tokens on the balance
+* `withdrawn` - amount of withdrawn tokens
 
-Для получения информации о состоянии аккаунта, нужно воспользоваться методом `getAccountInfo`.
-Метод принимает адрес пользователя в качестве параметра и возвращает три значения:
-* `initial` - изначальное количество токенов, замороженных на смарт-контракте
-* `withdrawn` - количество извлеченных токенов
-* `vested` - количество токенов, доступных для извлечения
+To get information about the account status, you need to use the `getAccountInfo` method.
+The method takes the user's address as a parameter and returns three values:
+* `initial` - the initial number of tokens frozen on the smart contract
+* `withdrawn` - number of tokens drawn
+* `vested` - the number of tokens available for extraction
+
+
