@@ -85,4 +85,4 @@ You can find the user guide for end-users [here](docs/user.md)
 
 ## Manager's guide
 Our manager's guide can be found [here](docs/manager.md)  
-Additional info about smart contract's capabilities (in Russian) [here](docs/additional.md)
+Additional info about smart contract's capabilities [here](docs/additional.md)
