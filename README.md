@@ -1,6 +1,6 @@
 ![CARBO](logo.png "CleanCarbon")
 
-# CleanCarbon smart contracts
+# CleanCarbon CARBO smart contracts
 
 * _Standart_        : [BEP20](https://github.com/binance-chain/BEPs/blob/master/BEP20.md)
 * _[Name](https://github.com/binance-chain/BEPs/blob/master/BEP20.md#5111-name)_            : CLEANCARBON
@@ -12,14 +12,14 @@
 
 ## Smart contracts description
 
-CleanCarbon smart-contract
+CleanCarbon CARBO smart contract
 
 ### Contracts
-1. _CARBOToken_ - Token contract
-2. _DividendManager_ - Contract for managing dividends
-3. _FeeManager_ - Contract to simplify work with commissions
-4. _CrowdSale_ - Contract for public sale
-5. _VestingWallet_ - Wallet for token locking
+1. _CARBOToken_ - Token contract - 0xa52262dA176186105199a597aC8Cf094FF71b0C5
+2. _DividendManager_ - Contract for managing dividends - 0xc30B883084Db5758E05e286d395c16C418b14d9A
+3. _FeeManager_ - Contract to simplify work with commissions - 0x8612d987c20E4A5bc4B9842c7792d809771C83b1
+4. _CrowdSale_ - Contract for public sale - 0x93cC557760341839fC23aFa2B3ce28E272C68787
+5. _VestingWallet_ - Wallet for token locking - 0x3d10dFb6c1F4331978Aad87718FEcA9a20e21572
 
 ### How to work with this project
 #### To start working with the contracts, please, follow theese steps for each contract:
