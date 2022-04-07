@@ -1,0 +1,12 @@
+{
+  "extends": "solhint:recommended",
+  "rules": {
+    "compiler-version": ["error", "^0.6.0"],
+    "func-order": "off",
+    "mark-callable-contracts": "off",
+    "max-line-length": ["warn", 160],
+    "no-empty-blocks": "off",
+    "private-vars-leading-underscore": "error",
+    "reason-string": "off"
+  }
+}
