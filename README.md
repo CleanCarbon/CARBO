@@ -21,6 +21,7 @@ CleanCarbon CARBO smart contract
 4. _CrowdSale_ - Contract for public sale - 0x93cC557760341839fC23aFa2B3ce28E272C68787
 5. _VestingWallet_ - Wallet for token locking - 0x3d10dFb6c1F4331978Aad87718FEcA9a20e21572
 
+
 ### How to work with this project
 #### To start working with the contracts, please, follow theese steps for each contract:
 1. Compile the contract using Remix with `enable optimization` flag and `compiler version` set to `0.8.0`.
